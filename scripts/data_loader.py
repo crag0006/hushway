@@ -9,14 +9,15 @@ import psycopg2
 from pathlib import Path
 import os
 
-CLEAN_DIR = Path("clean_data")
+# Anchored to this file's directory so the script works from any working directory
+CLEAN_DIR = Path(__file__).resolve().parent / "clean_data"
 
 DB_CONFIG = {
-    'host': 'localhost',
-    'database': 'sensory_navigation',
-    'user': 'postgres',
-    'password': 'postgres',
-    'port': 5432
+    'host': os.environ.get('HUSHWAY_DB_HOST', 'localhost'),
+    'database': os.environ.get('HUSHWAY_DB_NAME', 'postgres'),
+    'user': os.environ.get('HUSHWAY_DB_USER', 'postgres'),
+    'password': os.environ.get('HUSHWAY_DB_PASSWORD', ''),
+    'port': int(os.environ.get('HUSHWAY_DB_PORT', '5432')),
 }
 
 print("=" * 80)
@@ -110,67 +111,15 @@ for _, row in df_fast.iterrows():
 conn.commit()
 print("   Committed")
 
-# LOAD 4: GRAPH_NODE (from OSM features)
-print("\n[4] Loading graph_node (from OSM features)...")
-df_osm = pd.read_csv(CLEAN_DIR / "osm_features_clean.csv")
-
-osm_nodes = df_osm[df_osm['type'] == 'node'].copy()
-for idx, row in osm_nodes.iterrows():
-    cursor.execute("""
-        INSERT INTO graph_node 
-        (node_id, latitude, longitude, node_type)
-        VALUES (%s, %s, %s, %s)
-        ON CONFLICT (node_id) DO NOTHING;
-    """, (
-        int(row['osm_id']),
-        None,
-        None,
-        'osm_node',
-    ))
-
-conn.commit()
-print(f"   Loaded {len(osm_nodes):,} nodes from OSM")
-
-# LOAD 5: GRAPH_EDGE (from OSM ways)
-print("\n[5] Loading graph_edge (from OSM ways)...")
-
-# Disable FK constraint temporarily
-cursor.execute("ALTER TABLE graph_edge DISABLE TRIGGER ALL;")
-conn.commit()
-
-osm_ways = df_osm[df_osm['type'] == 'way'].copy()
-
-edge_id = 1
-for idx, row in osm_ways.iterrows():
-    osm_id = int(row['osm_id'])
-    street_name = row['name'] if pd.notna(row['name']) else None
-    
-    cursor.execute("""
-        INSERT INTO graph_edge 
-        (edge_id, from_node_id, to_node_id, length_meters, street_name, is_pedestrian_zone, nearest_sensor_id)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)
-        ON CONFLICT (edge_id) DO NOTHING;
-    """, (
-        edge_id,
-        osm_id,
-        osm_id + 1,
-        None,
-        street_name,
-        True,
-        None,
-    ))
-    edge_id += 1
-    
-    if edge_id % 10000 == 0:
-        conn.commit()
-        print(f"   Inserted {edge_id:,} edges...")
-
-conn.commit()
-print(f"   Loaded {len(osm_ways):,} edges")
-
-# Re-enable FK constraint
-cursor.execute("ALTER TABLE graph_edge ENABLE TRIGGER ALL;")
-conn.commit()
+# Graph loading moved to scripts/build_graph.py.
+#
+# The OSM export in clean_data/ has only osm_sequence_id, type, osm_id and name
+# columns: no coordinates and no way-to-node membership. It therefore cannot
+# produce a routable graph, and the code that used to live here inserted NULL
+# coordinates and fabricated edges as (osm_id -> osm_id + 1), which connected
+# nothing. build_graph.py derives a real, connected graph from the 134 sensor
+# locations instead. See docs/superpowers/specs/2026-08-10-epic1-backend-design.md
+print("\n[4] Graph: run `python scripts/build_graph.py` after this script.")
 
 cursor.close()
 conn.close()
@@ -182,6 +131,5 @@ print("\nTables populated:")
 print(f"   sensor_locations: 134 records")
 print(f"   pedestrian_counts_hourly: {total:,} records")
 print(f"   pedestrian_counts_fast_hour: {len(df_fast):,} records")
-print(f"   graph_node: {len(osm_nodes):,} records")
-print(f"   graph_edge: {len(osm_ways):,} records")
+print("\nNext: python scripts/build_graph.py   (graph, landmarks, hourly profile)")
 print("=" * 80)
