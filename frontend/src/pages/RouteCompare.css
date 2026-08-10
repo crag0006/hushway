@@ -48,3 +48,9 @@
   background: rgba(20, 30, 25, .2);
   border-radius: 3px;
 }
+
+.rc-page__status {
+  padding: 12px 16px;
+  color: var(--text-muted, #6b6b6b);
+  font-size: 14px;
+}
