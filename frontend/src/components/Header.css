@@ -1,0 +1,121 @@
+.hw-header {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 14px 28px;
+  z-index: 10;
+}
+
+.hw-header--overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: transparent;
+}
+
+.hw-header--solid {
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+}
+
+.hw-header__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--yellow);
+  font-weight: 700;
+  font-size: 21px;
+  letter-spacing: -0.5px;
+}
+
+.hw-header__brand-text {
+  color: var(--yellow);
+}
+
+.hw-header--overlay .hw-header__brand,
+.hw-header--overlay .hw-header__brand-text {
+  color: var(--yellow);
+  text-shadow: 0 1px 6px rgba(0, 0, 0, .15);
+}
+
+.hw-header__logo-icon {
+  filter: drop-shadow(0 1px 3px rgba(230, 190, 30, .3));
+}
+
+.hw-header__nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.hw-header__link {
+  padding: 8px 18px;
+  border-radius: var(--radius-pill);
+  color: var(--ink);
+  font-weight: 500;
+  font-size: 15px;
+  transition: background var(--dur-1) var(--ease), color var(--dur-1) var(--ease);
+}
+
+.hw-header--overlay .hw-header__link {
+  color: rgba(255, 255, 255, .96);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, .4);
+}
+
+.hw-header__link:hover {
+  background: color-mix(in srgb, var(--yellow) 25%, transparent);
+}
+
+.hw-header__link--active {
+  background: var(--yellow);
+  color: var(--ink);
+  text-shadow: none;
+  font-weight: 600;
+}
+
+.hw-header--overlay .hw-header__link--active {
+  color: var(--ink);
+  background: var(--yellow);
+}
+
+.hw-header__auth {
+  display: flex;
+  gap: 8px;
+}
+
+.hw-header__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 22px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 14.5px;
+  transition: transform var(--dur-1) var(--ease), background var(--dur-1) var(--ease);
+}
+
+.hw-header__btn:active { transform: translateY(1px); }
+
+.hw-header__btn--ghost {
+  background: var(--teal);
+  color: #fff;
+}
+
+.hw-header__btn--solid {
+  background: var(--teal);
+  color: #fff;
+}
+
+.hw-header--overlay .hw-header__btn--ghost,
+.hw-header--overlay .hw-header__btn--solid {
+  background: rgba(62, 81, 72, .78);
+  backdrop-filter: blur(8px);
+  color: #fff;
+}
+
+.hw-header__btn:hover {
+  background: var(--teal-d);
+}

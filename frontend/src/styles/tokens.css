@@ -1,0 +1,78 @@
+:root {
+  /* Surface */
+  --bg: #FBFBF9;
+  --card: #FFFFFF;
+  --card-2: #F5F5F1;
+  --ink: #1F2A26;
+  --ink-2: #2D3A34;
+  --mute: #6A7370;
+  --mute-2: #9AA39F;
+  --line: #E3E6E2;
+  --line-2: #EFF1EC;
+
+  /* Brand — HushWay yellow + calm greens */
+  --yellow: #F5D33F;
+  --yellow-d: #E6C025;
+  --yellow-soft: #FFF3B8;
+
+  --teal: #3E5148;
+  --teal-d: #2A382F;
+  --teal-l: #536860;
+  --teal-ink: #1B2721;
+
+  /* Quiet route (recommended) */
+  --quiet-bg: #DDEDDF;
+  --quiet-tint: #EAF5EC;
+  --quiet-ink: #294F35;
+  --quiet-btn: #33513C;
+  --quiet-btn-h: #263D2E;
+
+  /* Fastest route */
+  --fast-bg: #FBDFE3;
+  --fast-tint: #FBECEE;
+  --fast-ink: #831C2E;
+  --fast-btn: #E63958;
+  --fast-btn-h: #C42846;
+
+  /* Warning */
+  --warn-bg: #FDEBEB;
+  --warn-border: #F0BABA;
+  --warn-ink: #A31919;
+
+  /* Sanctuary stats */
+  --sanct-low-bg: #E1EEE4;
+  --sanct-low-ink: #2E4C39;
+  --sanct-quiet-bg: #E4EEF4;
+  --sanct-quiet-ink: #24506B;
+
+  /* Radius */
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius: 18px;
+  --radius-lg: 24px;
+  --radius-xl: 28px;
+  --radius-pill: 999px;
+
+  /* Shadow */
+  --shadow-xs: 0 1px 2px rgba(20, 30, 25, .05);
+  --shadow-sm: 0 2px 6px rgba(20, 30, 25, .06);
+  --shadow: 0 6px 20px rgba(20, 30, 25, .08);
+  --shadow-lg: 0 14px 40px rgba(20, 30, 25, .14);
+  --shadow-map: 0 10px 30px rgba(20, 30, 25, .12);
+
+  /* Motion */
+  --ease: cubic-bezier(.2, .8, .2, 1);
+  --dur-1: 140ms;
+  --dur-2: 240ms;
+  --dur-3: 420ms;
+
+  /* Type */
+  --font-sans: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: .001ms !important;
+    transition-duration: .001ms !important;
+  }
+}
