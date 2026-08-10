@@ -18,7 +18,16 @@ def is_congested(count: float, threshold: int) -> bool:
 
 
 def edge_count(profile, node_a, node_b):
-    """Average count across an edge's endpoints, or None when neither reports."""
+    """Average count across an edge's endpoints, or None when neither reports.
+
+    Deliberately tolerant: a single reporting endpoint still yields a number,
+    because congestion avoidance should act on any evidence it has. Route-level
+    scoring is stricter — `score_path` requires BOTH endpoints before counting
+    an edge as covered, since labelling a route Low or High from half the data
+    overstates confidence. The two rules serve different purposes, so an edge
+    can be treated as congested while the route containing it reports
+    "unavailable".
+    """
     values = [
         v
         for v in (profile.count_for(node_a.sensor_id), profile.count_for(node_b.sensor_id))

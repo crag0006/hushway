@@ -70,3 +70,12 @@ def test_coverage_is_length_weighted():
     profile = CountProfile({1: 100, 2: 100})
     score = score_path(GRAPH, profile, [1, 2, 3], 500, 0.5)
     assert score.coverage == 0.5
+
+
+def test_coverage_exactly_at_minimum_is_still_available():
+    # Coverage == coverage_min must be available, not unavailable:
+    # the rule is `coverage < coverage_min` fails, not `<=`.
+    profile = CountProfile({1: 100, 2: 100})
+    score = score_path(GRAPH, profile, [1, 2, 3], 500, 0.5)
+    assert score.coverage == 0.5
+    assert score.level == "low"
