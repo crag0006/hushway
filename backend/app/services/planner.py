@@ -165,8 +165,13 @@ def plan_routes(provider, profile, start, goal, threshold, coverage_min, walk_sp
         if avoid_path is not None:
             candidate = _build(provider, profile, avoid_path, "quiet", threshold,
                                coverage_min, walk_speed_mps)
-            # US 1.2 AC4: only offer it if congestion is genuinely lower.
-            if candidate.score.peak_count < quiet.score.peak_count:
+            # US 1.2 AC4: only offer it if congestion is genuinely lower "based on
+            # the available pedestrian data". An under-instrumented candidate has
+            # its peak forced to 0.0 by score_path, which would compare as lower
+            # than any measured route — so it must be rejected, not offered. An
+            # unmeasured route is not a quieter route; it is an unknown one.
+            measured = candidate.score.level != LEVEL_UNAVAILABLE
+            if measured and candidate.score.peak_count < quiet.score.peak_count:
                 replacement = candidate
         if replacement is not None:
             quiet = replacement

@@ -104,3 +104,37 @@ def test_duration_uses_walking_speed():
     assert len(result.routes) == 1
     assert result.routes[0].path == [1, 2, 4]
     assert result.routes[0].duration_min == 3
+
+
+# Detour threading two consecutive unmeasured nodes: those edges are neither
+# congested (edge_count returns None) nor covered (score_path needs both
+# endpoints), so the candidate's peak is forced to 0.0. The detour is long
+# enough that the first sensory pass still picks the short congested route,
+# so the avoidance replan is the code path under test.
+GAP_NODES = [
+    Node(node_id=1, lat=-37.8180, lon=144.9600, sensor_id=1),
+    Node(node_id=2, lat=-37.8170, lon=144.9650, sensor_id=2),
+    Node(node_id=3, lat=-37.8190, lon=144.9640, sensor_id=3),
+    Node(node_id=5, lat=-37.8190, lon=144.9670, sensor_id=5),
+    Node(node_id=4, lat=-37.8180, lon=144.9700, sensor_id=4),
+]
+GAP_EDGES = [
+    Edge(from_id=1, to_id=2, length_m=100.0),
+    Edge(from_id=2, to_id=4, length_m=100.0),
+    Edge(from_id=1, to_id=3, length_m=600.0),
+    Edge(from_id=3, to_id=5, length_m=600.0),
+    Edge(from_id=5, to_id=4, length_m=600.0),
+]
+GAP_GRAPH = SensorGraphProvider(GAP_NODES, GAP_EDGES)
+
+
+def test_unmeasured_detour_is_not_offered_as_lower_congestion():
+    # US 1.2 AC4 requires the alternative be lower "based on the available
+    # pedestrian data". A route with no data is unknown, not quieter, so it
+    # must not replace a measured route just because its peak reads 0.0.
+    profile = CountProfile({1: 100, 2: 2000, 4: 100})
+    result = plan_routes(GAP_GRAPH, profile, 1, 4, 500, 0.5, 1.35)
+    quiet = next(r for r in result.routes if r.kind == "quiet")
+    assert quiet.path == [1, 2, 4], "must keep the measured route"
+    assert quiet.score.level != "unavailable"
+    assert WARN_NO_ALTERNATIVE in codes(result)
