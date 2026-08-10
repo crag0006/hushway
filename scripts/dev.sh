@@ -11,6 +11,16 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 
+# Load .env if present, so the password does not have to live in your shell
+# profile or, worse, be edited into this tracked file. Loaded before the
+# defaults below, so overrides set in .env (e.g. HUSHWAY_PYTHON) take effect.
+if [ -f .env ]; then
+  set -a
+  # shellcheck disable=SC1091
+  . ./.env
+  set +a
+fi
+
 BACKEND_PORT="${HUSHWAY_BACKEND_PORT:-8000}"
 FRONTEND_PORT="${HUSHWAY_FRONTEND_PORT:-5173}"
 PYTHON="${HUSHWAY_PYTHON:-python3}"
@@ -18,15 +28,6 @@ PYTHON="${HUSHWAY_PYTHON:-python3}"
 mkdir -p logs
 
 # ---------------------------------------------------------------- preflight --
-
-# Load .env if present, so the password does not have to live in your shell
-# profile or, worse, be edited into this tracked file.
-if [ -f .env ]; then
-  set -a
-  # shellcheck disable=SC1091
-  . ./.env
-  set +a
-fi
 
 if [ -z "${HUSHWAY_DB_PASSWORD:-}" ]; then
   echo "ERROR: HUSHWAY_DB_PASSWORD is not set."
