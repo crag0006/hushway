@@ -43,6 +43,11 @@ class SensorGraphProvider:
 
     def snap(self, lat: float, lon: float) -> Node:
         """Nearest graph node to an arbitrary coordinate."""
+        if not self._nodes:
+            raise ValueError(
+                "Graph has no nodes. Run scripts/build_graph.py to populate "
+                "graph_node and graph_edge."
+            )
         return min(
             self._nodes.values(),
             key=lambda n: _squared_distance(lat, lon, n.lat, n.lon),

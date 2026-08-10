@@ -1,3 +1,5 @@
+import pytest
+
 from app.graph.base import Edge, Node
 from app.graph.sensor_graph import SensorGraphProvider
 
@@ -27,3 +29,9 @@ def test_neighbour_length_is_preserved():
 def test_node_lookup_by_id():
     provider = SensorGraphProvider(NODES, EDGES)
     assert provider.node(2).lon == 144.9650
+
+
+def test_snap_on_empty_graph_raises_a_useful_error():
+    provider = SensorGraphProvider([], [])
+    with pytest.raises(ValueError, match="build_graph"):
+        provider.snap(-37.8180, 144.9650)
