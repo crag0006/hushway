@@ -1,0 +1,245 @@
+.home {
+  min-height: 100vh;
+  background: var(--bg);
+}
+
+.home__hero {
+  position: relative;
+  min-height: 92vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  --hero-image: url('/images/hushway-bg.png');
+}
+
+/* Fallback background if image fails */
+.home__hero-bg {
+  position: absolute;
+  inset: 0;
+
+  background:
+    radial-gradient(
+      1000px 500px at 30% 40%,
+      #B7C4B9 0%,
+      transparent 60%
+    ),
+    radial-gradient(
+      800px 600px at 80% 70%,
+      #A6B7A9 0%,
+      transparent 55%
+    ),
+    linear-gradient(
+      180deg,
+      #98A7A0 0%,
+      #7B928A 60%,
+      #52685E 100%
+    );
+
+  background-size: cover;
+  background-position: center;
+}
+
+/* Realistic city background image */
+.home__hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+
+  background-image: var(--hero-image);
+  background-size: 115% auto;
+  background-position: 35% center;
+  background-repeat: no-repeat;
+
+  opacity: 1;
+  pointer-events: none;
+}
+
+/* Soft dark overlay */
+.home__hero-tint {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(20, 40, 35, 0.08) 0%,
+      rgba(20, 40, 35, 0.12) 35%,
+      rgba(20, 40, 35, 0.28) 70%,
+      rgba(20, 40, 35, 0.38) 100%
+    );
+}
+
+/* Hero text area */
+.home__hero-content {
+  position: relative;
+  z-index: 2;
+
+  width: 58%;
+  margin: auto 5% auto auto;
+  padding: 0 24px;
+
+  text-align: center;
+  color: #fff;
+
+  animation: heroIn 0.8s var(--ease) 0.1s both;
+}
+
+/* HUSHWAY title */
+.home__title {
+  margin: 0 0 12px;
+
+  font-size: clamp(64px, 8vw, 120px);
+  font-weight: 200;
+  letter-spacing: 0.05em;
+
+  color: #fff;
+
+  line-height: 1;
+
+  text-shadow:
+    0 3px 10px rgba(0, 0, 0, 0.42),
+    0 5px 30px rgba(0, 0, 0, 0.25);
+}
+
+/* Subtitle */
+.home__subtitle {
+  margin: 0 0 36px;
+
+  font-size: clamp(14px, 1.4vw, 19px);
+  letter-spacing: 0.3em;
+  font-weight: 400;
+
+  color: rgba(255, 255, 255, 0.96);
+
+  text-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Button container */
+.home__ctas {
+  display: inline-flex;
+  gap: 16px;
+}
+
+/* Main buttons */
+.home__cta {
+  padding: 14px 44px;
+
+  border-radius: 6px;
+
+  background: rgba(45, 70, 61, 0.72);
+
+  color: #fff;
+
+  font-size: 18px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+
+  border: 1px solid rgba(255, 255, 255, 0.45);
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  transition:
+    transform var(--dur-2) var(--ease),
+    background var(--dur-2) var(--ease);
+}
+
+/* Hover effect */
+.home__cta:hover {
+  transform: translateY(-2px);
+
+  background: rgba(45, 70, 61, 0.92);
+}
+
+/* Quiet button */
+.home__cta--ghost {
+  background: rgba(45, 70, 61, 0.55);
+}
+
+.home__cta--ghost:hover {
+  background: rgba(45, 70, 61, 0.82);
+}
+
+/* Entrance animation */
+@keyframes heroIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Tablet */
+@media (max-width: 1000px) {
+
+  .home__hero::after {
+    background-size: cover;
+    background-position: center;
+  }
+
+  .home__hero-content {
+    width: 70%;
+    margin: auto 4% auto auto;
+  }
+
+  .home__title {
+    font-size: clamp(60px, 10vw, 100px);
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+
+  .home__hero {
+    min-height: 86vh;
+  }
+
+  .home__hero::after {
+    background-size: cover;
+    background-position: 42% center;
+  }
+
+  .home__hero-tint {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(20, 40, 35, 0.15) 0%,
+        rgba(20, 40, 35, 0.28) 50%,
+        rgba(20, 40, 35, 0.48) 100%
+      );
+  }
+
+  .home__hero-content {
+    width: 100%;
+    margin: auto;
+    padding: 0 22px;
+  }
+
+  .home__title {
+    font-size: clamp(54px, 17vw, 82px);
+    letter-spacing: 0.04em;
+  }
+
+  .home__subtitle {
+    font-size: 13px;
+    letter-spacing: 0.22em;
+    margin-bottom: 30px;
+  }
+
+  .home__ctas {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .home__cta {
+    padding: 12px 34px;
+    font-size: 16px;
+  }
+}
