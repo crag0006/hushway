@@ -7,9 +7,13 @@ from app.db import get_cursor
 
 @dataclass(frozen=True)
 class CountProfile:
-    """Average pedestrian counts for one weekday-hour, keyed by sensor id."""
+    """Average pedestrian counts for one weekday-hour, keyed by sensor id.
 
-    counts: dict
+    `frozen=True` prevents rebinding `counts`, but the dict itself is still
+    mutable — treat it as read-only. Nothing in this codebase mutates it.
+    """
+
+    counts: dict[int, int]
 
     def count_for(self, sensor_id: int):
         """Average count, or None when the sensor reported no data."""
