@@ -20,3 +20,6 @@ dist/
 # Local environment
 .env
 .env.local
+
+# Local run logs
+logs/

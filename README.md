@@ -48,27 +48,123 @@ python scripts/build_graph.py                          # populate them
 `build_graph.py` should report 134 nodes, 345 edges, 26 landmarks and about 16,700 profile
 rows. It is safe to re-run.
 
-### 2. Backend
+### 2. Install dependencies
 
 ```bash
-cd backend
-pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8000
+cd backend  && pip install -r requirements.txt && cd ..
+cd frontend && npm install && cd ..
 ```
 
-Check it: <http://localhost:8000/api/health> should report 134 graph nodes and 100 sensors
-with data. Interactive API docs are at <http://localhost:8000/docs>.
+### 3. Run the app
 
-### 3. Frontend
+One command starts both servers:
 
 ```bash
-cd frontend
-npm install
-npm run dev
+./scripts/dev.sh
 ```
 
-Opens <http://localhost:5173>. **The route planner is at `/explore`.** The backend must be
-running or the page will report that it cannot reach the route service.
+```
+Starting backend on :8000 ...
+  {"status":"ok","graph_nodes":134,"graph_edges":345,"sensors_with_data":100}
+Starting frontend on :5173 ...
+
+  HushWay is running.
+
+    App             http://localhost:5173
+    Route planner   http://localhost:5173/explore
+    API docs        http://localhost:8000/docs
+```
+
+Press **Ctrl-C** to stop both. Logs are written to `logs/`.
+
+The script checks your setup before starting and tells you exactly what to fix if the
+database password is unset, dependencies are missing, a port is already taken, or the
+routing graph is empty.
+
+<details>
+<summary>Running the two servers separately</summary>
+
+```bash
+cd backend && uvicorn app.main:app --reload --port 8000   # terminal 1
+cd frontend && npm run dev                                # terminal 2
+```
+</details>
+
+**Overrides** — `HUSHWAY_BACKEND_PORT`, `HUSHWAY_FRONTEND_PORT`, and `HUSHWAY_PYTHON` (set
+this if `python3` is not the interpreter holding your dependencies, e.g.
+`HUSHWAY_PYTHON=/opt/anaconda3/bin/python`).
+
+## Walkthrough
+
+**One thing to know first:** the browser always scores routes for **the current day and
+hour**. The same trip looks different at Saturday lunchtime and Tuesday midnight — that is
+the product working, not a bug. Each scenario below therefore gives a `curl` command with
+the time pinned, so you can reproduce the exact figures whenever you read this.
+
+`dow` is 0 = Sunday through 6 = Saturday.
+
+### Scenario 1 — The calm route is not the fast route
+
+Parliament Station to Federation Square, Saturday 1pm, with crowds tolerated
+(threshold 1000):
+
+```bash
+curl -s "http://localhost:8000/api/routes?origin_id=4&destination_id=5&dow=6&hour=13&threshold=1000"
+```
+
+| Route | Time | Distance | Badge | Busiest segment |
+| --- | --- | --- | --- | --- |
+| **Quiet Route** (recommended, green) | 19 min | 1.5 km | **Low Sensory** | 334 people/hr |
+| **Fastest Route** (red) | 17 min | 1.3 km | **High Sensory** | 2,783 people/hr |
+
+Two extra minutes of walking avoids roughly **eight times** the foot traffic. That is the
+whole product in one comparison.
+
+In the browser:
+
+1. Run `./scripts/dev.sh` and open <http://localhost:5173/explore>.
+2. Click the **High** crowd-density pill.
+3. Choose **Parliament Station** as the origin and **Federation Square** as the
+   destination.
+4. Two cards appear in the sidebar and two lines are drawn on the map — green for the
+   quiet route, red for the fastest. Click either line to identify it.
+
+Your numbers will be lower than the table late at night and higher at peak hour, but the
+quiet route should stay below the fast one.
+
+### Scenario 2 — It tells you when it cannot help
+
+A tool for sensory-sensitive travel is only useful if it admits what it does not know.
+Same trip, same time, but now you want to avoid anything above 250 people/hr:
+
+```bash
+curl -s "http://localhost:8000/api/routes?origin_id=4&destination_id=5&dow=6&hour=13&threshold=250"
+```
+
+Both routes now come back **High Sensory** — at this stricter preference even the quiet
+route's 334 people/hr is too busy for you — along with two warnings:
+
+- *"No lower-congestion route is currently available"*
+- *"This route exceeds your preferred crowd level"*
+
+It has not invented a calmer path that does not exist. It shows the best route it found and
+says plainly that it falls short of what you asked for.
+
+In the browser, click the **Low** pill on the same trip. The app re-plans immediately and
+the badges update. Whether the warnings appear depends on how busy the CBD actually is
+right now: at a quiet hour the recommended route may genuinely sit under 250 people/hr, in
+which case no warning is correct. Use the `curl` command above to see the warning path on
+demand.
+
+Reload the page afterwards — your crowd preference is still selected. It persists between
+visits.
+
+### What "unavailable" means
+
+Some routes are badged **"Sensory information unavailable"**. Only 100 of the 134 sensors
+report data, so when less than half a route's length is covered, HushWay says so instead of
+guessing. An unmeasured route is also never offered as a "less congested" alternative — an
+unknown route is not a quieter one.
 
 ## Tests
 
