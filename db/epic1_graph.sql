@@ -25,7 +25,8 @@ CREATE TABLE graph_edge (
     is_pedestrian_zone BOOLEAN DEFAULT TRUE,
     nearest_sensor_id  INT REFERENCES sensor_locations(location_id),
     created_at         TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT uq_graph_edge_pair UNIQUE (from_node_id, to_node_id)
+    CONSTRAINT uq_graph_edge_pair UNIQUE (from_node_id, to_node_id),
+    CONSTRAINT ck_graph_edge_ordered CHECK (from_node_id < to_node_id)
 );
 
 CREATE INDEX idx_graph_edge_from ON graph_edge(from_node_id);
@@ -51,4 +52,5 @@ CREATE TABLE IF NOT EXISTS sensor_hourly_profile (
     PRIMARY KEY (location_id, dow, hourday)
 );
 
+DROP INDEX IF EXISTS idx_profile_lookup;
 CREATE INDEX idx_profile_lookup ON sensor_hourly_profile(dow, hourday);
