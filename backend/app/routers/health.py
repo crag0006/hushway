@@ -1,8 +1,12 @@
 """Health and readiness endpoint."""
 
+import logging
+
 from fastapi import APIRouter
 
 from app.db import get_cursor
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -21,5 +25,6 @@ def health() -> dict:
             cur.execute("select count(distinct location_id) as n from sensor_hourly_profile")
             counts["sensors_with_data"] = cur.fetchone()["n"]
     except Exception as exc:  # noqa: BLE001 - health must never raise
+        logger.exception("Health check query failed")
         status = f"degraded: {exc.__class__.__name__}"
     return {"status": status, **counts}
