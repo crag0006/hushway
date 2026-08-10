@@ -1,0 +1,7 @@
+raw_data/
+clean_data/
+venv/
+__pycache__/
+*.py[cod]
+.vscode/
+.DS_Store
