@@ -1,7 +1,22 @@
+# Data files (see README for how to obtain these)
 raw_data/
 clean_data/
+
+# Python
 venv/
+.venv/
 __pycache__/
 *.py[cod]
+
+# Node — build output, never commit. Regenerate with `npm install`.
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Editor / OS
 .vscode/
 .DS_Store
+
+# Local environment
+.env
+.env.local
