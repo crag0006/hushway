@@ -77,14 +77,28 @@ export default function SignUp() {
 
             <div className="register-field">
               <label htmlFor="username">
-                Username
+                First Name
               </label>
 
               <input
                 type="text"
-                id="username"
-                name="username"
-                placeholder="Choose a username"
+                id="firstname"
+                name="firstname"
+                placeholder="Enter your first name"
+                required
+              />
+            </div>
+
+            <div className="register-field">
+              <label htmlFor="username">
+                Last Name
+              </label>
+
+              <input
+                type="text"
+                id="lastname"
+                name="lastname"
+                placeholder="Enter your last name"
                 required
               />
             </div>
