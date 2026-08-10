@@ -27,11 +27,16 @@ export PATH="/Library/PostgreSQL/18/bin:$PATH"
 ```bash
 git clone https://github.com/crag0006/hushway.git
 cd hushway
-export HUSHWAY_DB_PASSWORD='<your postgres password>'
+echo "HUSHWAY_DB_PASSWORD=<your postgres password>" > .env
 ```
 
 Every script and the API read the database password from `HUSHWAY_DB_PASSWORD`. Nothing is
-hardcoded, so set it in each shell you use (or add it to your shell profile).
+hardcoded. `.env` is gitignored and `scripts/dev.sh` loads it automatically; if you prefer,
+`export HUSHWAY_DB_PASSWORD='...'` in your shell works just as well.
+
+**Do not edit the password into `scripts/dev.sh`** — that file is tracked by git, so the
+password would be committed. It also would not work: a plain shell variable is not passed
+to child processes, so the API would still fail to reach Postgres.
 
 ### 1. Database
 
@@ -203,6 +208,32 @@ unknown route is not a quieter one.
 | `db/` | base schema and the EPIC-1 migration |
 | `scripts/` | data loader and graph builder |
 | `docs/superpowers/` | design spec and implementation plan |
+
+## Troubleshooting
+
+**The origin and destination menus are empty.** The frontend could not load places from the
+API. The page now says so directly, with the underlying error. Check that the backend is up:
+
+```bash
+curl -s http://localhost:8000/api/health
+```
+
+`{"status":"ok","graph_nodes":134,...}` is healthy. `"status":"degraded..."` means the API
+is running but cannot query the database — look at `logs/backend.log`. `graph_nodes: 0`
+means the graph was never built; run `python scripts/build_graph.py`.
+
+**`fe_sendauth: no password supplied` in `logs/backend.log`.** The API did not receive
+`HUSHWAY_DB_PASSWORD`. Put it in `.env`, or `export` it — assigning it without `export`
+leaves it invisible to child processes.
+
+**`port 5173 is already in use`.** A previous run is still going:
+
+```bash
+kill $(lsof -ti tcp:5173)
+```
+
+**Routes fail while places load.** The graph tables are empty or stale. Re-run
+`python scripts/build_graph.py`, then restart the API — the graph is cached in-process.
 
 ## Notes and known limitations
 

@@ -19,9 +19,56 @@ mkdir -p logs
 
 # ---------------------------------------------------------------- preflight --
 
+# Load .env if present, so the password does not have to live in your shell
+# profile or, worse, be edited into this tracked file.
+if [ -f .env ]; then
+  set -a
+  # shellcheck disable=SC1091
+  . ./.env
+  set +a
+fi
+
 if [ -z "${HUSHWAY_DB_PASSWORD:-}" ]; then
   echo "ERROR: HUSHWAY_DB_PASSWORD is not set."
-  echo "       export HUSHWAY_DB_PASSWORD='<your postgres password>' and try again."
+  echo ""
+  echo "  Either export it:   export HUSHWAY_DB_PASSWORD='<your postgres password>'"
+  echo "  or create .env:     echo \"HUSHWAY_DB_PASSWORD=<your postgres password>\" > .env"
+  echo ""
+  echo "  .env is gitignored. Do not edit the password into this script — it is"
+  echo "  tracked by git and would be committed."
+  exit 1
+fi
+
+# Child processes only inherit EXPORTED variables. Without this, setting the
+# password as a plain shell variable leaves the API unable to reach Postgres,
+# and it fails later with a confusing "no password supplied".
+export HUSHWAY_DB_PASSWORD
+export HUSHWAY_DB_HOST="${HUSHWAY_DB_HOST:-localhost}"
+export HUSHWAY_DB_PORT="${HUSHWAY_DB_PORT:-5432}"
+export HUSHWAY_DB_NAME="${HUSHWAY_DB_NAME:-postgres}"
+export HUSHWAY_DB_USER="${HUSHWAY_DB_USER:-postgres}"
+
+# Prove the credentials actually work before starting anything, so a bad
+# password fails here with a clear message instead of as an empty dropdown.
+if ! "$PYTHON" - <<'PYCHECK' 2>logs/dbcheck.log
+import os, sys
+import psycopg2
+try:
+    psycopg2.connect(
+        host=os.environ["HUSHWAY_DB_HOST"], port=os.environ["HUSHWAY_DB_PORT"],
+        dbname=os.environ["HUSHWAY_DB_NAME"], user=os.environ["HUSHWAY_DB_USER"],
+        password=os.environ["HUSHWAY_DB_PASSWORD"],
+    ).close()
+except Exception as exc:
+    print(exc, file=sys.stderr)
+    sys.exit(1)
+PYCHECK
+then
+  echo "ERROR: cannot connect to PostgreSQL as user '$HUSHWAY_DB_USER'."
+  echo "       $(tr -d '\n' <logs/dbcheck.log | head -c 200)"
+  echo ""
+  echo "  Check HUSHWAY_DB_PASSWORD, and that PostgreSQL is running on"
+  echo "  $HUSHWAY_DB_HOST:$HUSHWAY_DB_PORT."
   exit 1
 fi
 
@@ -115,6 +162,13 @@ HEALTH="$(curl -sf "http://localhost:$BACKEND_PORT/api/health" 2>/dev/null || tr
 echo "  $HEALTH"
 
 case "$HEALTH" in
+  *'"status":"degraded'*)
+    echo ""
+    echo "ERROR: the API started but cannot query the database."
+    echo "       Last lines of logs/backend.log:"
+    tail -5 logs/backend.log
+    exit 1
+    ;;
   *'"graph_nodes":0'*)
     echo ""
     echo "WARNING: the routing graph is empty, so route planning will fail."

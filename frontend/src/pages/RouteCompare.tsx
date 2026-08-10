@@ -14,13 +14,24 @@ import './RouteCompare.css'
 
 export default function RouteCompare() {
   const [places, setPlaces] = useState<Place[]>([])
+  const [placesError, setPlacesError] = useState<string | null>(null)
   const [originId, setOriginId] = useState<number | null>(null)
   const [destinationId, setDestinationId] = useState<number | null>(null)
   const { density, setDensity, threshold } = useSensitivity()
   const { data, loading, error } = useRoute(originId, destinationId, threshold)
 
   useEffect(() => {
-    fetchPlaces().then(setPlaces).catch(() => setPlaces([]))
+    fetchPlaces()
+      .then((result) => {
+        setPlaces(result)
+        // An empty list is not an error, but it leaves unusable dropdowns, so
+        // say why rather than showing two empty menus.
+        setPlacesError(result.length === 0 ? 'No places were returned by the API.' : null)
+      })
+      .catch((err: Error) => {
+        setPlaces([])
+        setPlacesError(err.message)
+      })
   }, [])
 
   const routes = data?.routes ?? []
@@ -41,9 +52,18 @@ export default function RouteCompare() {
             onDensityChange={setDensity}
           />
 
+          {placesError && (
+            <p className="rc-page__status rc-page__status--error">
+              Could not load places, so the menus are empty. Is the backend running on{' '}
+              <code>localhost:8000</code>? Check <code>logs/backend.log</code>.
+              <br />
+              <small>{placesError}</small>
+            </p>
+          )}
+
           {loading && <p className="rc-page__status">Finding calmer routes…</p>}
-          {error && <p className="rc-page__status">Could not reach the route service.</p>}
-          {!loading && !error && (originId === null || destinationId === null) && (
+          {error && <p className="rc-page__status rc-page__status--error">{error}</p>}
+          {!placesError && !loading && !error && (originId === null || destinationId === null) && (
             <p className="rc-page__status">Choose a starting point and destination.</p>
           )}
 
