@@ -212,7 +212,7 @@ unknown route is not a quieter one.
 | `frontend/src/hooks/` | `useRoute`, `useSensitivity` |
 | `db/` | base schema and the EPIC-1 migration |
 | `scripts/` | data loader and graph builder |
-| `docs/superpowers/` | design spec and implementation plan |
+| `docs/` | design spec: why the graph, thresholds and seams are what they are |
 
 ## Troubleshooting
 
@@ -251,7 +251,7 @@ If it is something else, stop it yourself or move ports:
   coordinates or way-to-node membership. Lines can therefore cut across blocks. The
   `GraphProvider` interface in `backend/app/graph/base.py` exists so real OpenStreetMap
   geometry can be swapped in without touching the planner, scoring or API. See
-  `docs/superpowers/specs/2026-08-10-epic1-backend-design.md`.
+  `docs/2026-08-10-epic1-backend-design.md`.
 - **Restart the API after re-running `build_graph.py`.** The graph is cached in-process for
   speed, so a running server keeps serving the old one.
 - **Never commit `node_modules/` or the data CSVs.** Both are gitignored. `node_modules`

@@ -118,7 +118,7 @@ print("   Committed")
 # produce a routable graph, and the code that used to live here inserted NULL
 # coordinates and fabricated edges as (osm_id -> osm_id + 1), which connected
 # nothing. build_graph.py derives a real, connected graph from the 134 sensor
-# locations instead. See docs/superpowers/specs/2026-08-10-epic1-backend-design.md
+# locations instead. See docs/2026-08-10-epic1-backend-design.md
 print("\n[4] Graph: run `python scripts/build_graph.py` after this script.")
 
 cursor.close()
