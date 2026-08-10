@@ -87,14 +87,54 @@ fi
 
 port_busy() { lsof -ti tcp:"$1" -sTCP:LISTEN >/dev/null 2>&1; }
 
+# `./scripts/dev.sh --restart` stops whatever holds our ports first. Handy when
+# a previous run was killed in a way that skipped its cleanup.
+RESTART=0
+for arg in "$@"; do
+  case "$arg" in
+    --restart) RESTART=1 ;;
+    -h|--help)
+      echo "Usage: ./scripts/dev.sh [--restart]"
+      echo "  --restart   stop anything already holding the ports, then start"
+      exit 0
+      ;;
+    *) echo "Unknown option: $arg (try --help)"; exit 1 ;;
+  esac
+done
+
 for port_pair in "$BACKEND_PORT backend" "$FRONTEND_PORT frontend"; do
   set -- $port_pair
-  if port_busy "$1"; then
-    echo "ERROR: port $1 is already in use, so the $2 cannot start."
-    echo "       Find it with:  lsof -ti tcp:$1"
-    echo "       Stop it with:  kill \$(lsof -ti tcp:$1)"
-    exit 1
+  port="$1"
+  role="$2"
+  port_busy "$port" || continue
+
+  holder_pid="$(lsof -ti tcp:"$port" -sTCP:LISTEN 2>/dev/null | head -1)"
+  holder_cmd="$(ps -p "$holder_pid" -o command= 2>/dev/null || echo unknown)"
+
+  if [ "$RESTART" -eq 1 ]; then
+    echo "Port $port was held by pid $holder_pid; stopping it (--restart)."
+    kill -TERM $(lsof -ti tcp:"$port" -sTCP:LISTEN 2>/dev/null) 2>/dev/null || true
+    sleep 2
+    kill -9 $(lsof -ti tcp:"$port" -sTCP:LISTEN 2>/dev/null) 2>/dev/null || true
+    sleep 1
+    port_busy "$port" && { echo "ERROR: could not free port $port."; exit 1; }
+    continue
   fi
+
+  echo "ERROR: port $port is already in use, so the $role cannot start."
+  echo "       Held by pid $holder_pid: $(echo "$holder_cmd" | cut -c1-70)"
+  echo ""
+  case "$holder_cmd" in
+    *uvicorn*|*vite*)
+      echo "  That looks like an earlier HushWay run. Restart cleanly with:"
+      echo "      ./scripts/dev.sh --restart"
+      ;;
+    *)
+      echo "  That is not a HushWay process, so stop it yourself, or use a"
+      echo "  different port:  HUSHWAY_BACKEND_PORT=8001 ./scripts/dev.sh"
+      ;;
+  esac
+  exit 1
 done
 
 # ------------------------------------------------------------------ cleanup --

@@ -82,6 +82,8 @@ Starting frontend on :5173 ...
 
 Press **Ctrl-C** to stop both. Logs are written to `logs/`.
 
+If a previous run is still holding the ports, `./scripts/dev.sh --restart` stops it first.
+
 The script checks your setup before starting and tells you exactly what to fix if the
 database password is unset, dependencies are missing, a port is already taken, or the
 routing graph is empty.
@@ -226,11 +228,15 @@ means the graph was never built; run `python scripts/build_graph.py`.
 `HUSHWAY_DB_PASSWORD`. Put it in `.env`, or `export` it — assigning it without `export`
 leaves it invisible to child processes.
 
-**`port 5173 is already in use`.** A previous run is still going:
+**`port 8000 is already in use`** (or 5173). A previous run is still going. The script
+names the process holding the port; if it is an earlier HushWay run, restart cleanly:
 
 ```bash
-kill $(lsof -ti tcp:5173)
+./scripts/dev.sh --restart
 ```
+
+If it is something else, stop it yourself or move ports:
+`HUSHWAY_BACKEND_PORT=8001 ./scripts/dev.sh`
 
 **Routes fail while places load.** The graph tables are empty or stale. Re-run
 `python scripts/build_graph.py`, then restart the API — the graph is cached in-process.
