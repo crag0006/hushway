@@ -6,7 +6,7 @@ import Community from './pages/Community'
 import Resources from './pages/Resources'
 import Contact from './pages/Contact'
 import SignIn from './pages/SignIn'
-import Register from './pages/Register'
+import Register from './pages/SignUp'
 
 export function AppRouter() {
   return (
