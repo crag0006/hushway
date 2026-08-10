@@ -1428,7 +1428,7 @@ def test_offers_lower_congestion_alternative():
     assert len(result.routes) == 2
 
 
-def test_no_alternative_warning_when_quiet_equals_direct():
+def test_low_counts_produce_no_exceeds_warning():
     # Uniform low counts: the quiet route is the direct route, and that is fine.
     profile = CountProfile({1: 50, 2: 50, 3: 50, 4: 50})
     result = plan_routes(GRAPH, profile, 1, 4, 500, 0.5, 1.35)
@@ -1464,16 +1464,24 @@ def test_duration_uses_walking_speed():
 Run: `cd backend && python -m pytest tests/unit/test_alternatives.py -v`
 Expected: FAIL with `ImportError: cannot import name 'plan_routes'`
 
-- [ ] **Step 3: Append the implementation**
+- [ ] **Step 3a: Extend the imports at the top of `planner.py`**
 
-Append to `backend/app/services/planner.py`:
+Imports belong in the existing block at the top of the file, not partway down it.
+Replace the current import lines with:
 
 ```python
-import math as _math
-from dataclasses import dataclass as _dataclass
+import heapq
+import math
+from dataclasses import dataclass
 
-from app.services.scoring import LEVEL_UNAVAILABLE, is_congested, score_path
+from app.services.scoring import LEVEL_UNAVAILABLE, edge_count, is_congested, score_path
+```
 
+- [ ] **Step 3b: Append the implementation**
+
+Append to `backend/app/services/planner.py` (no further import lines):
+
+```python
 WARN_UNAVAILABLE = "SENSORY_DATA_UNAVAILABLE"
 WARN_NO_ALTERNATIVE = "NO_LOWER_CONGESTION_ROUTE"
 WARN_EXCEEDS = "EXCEEDS_PREFERRED_THRESHOLD"
@@ -1485,7 +1493,7 @@ WARNING_MESSAGES = {
 }
 
 
-@_dataclass(frozen=True)
+@dataclass(frozen=True)
 class PlannedRoute:
     route_id: str
     kind: str
@@ -1495,7 +1503,7 @@ class PlannedRoute:
     score: object
 
 
-@_dataclass(frozen=True)
+@dataclass(frozen=True)
 class PlanResult:
     routes: list
     warnings: list
@@ -1518,7 +1526,7 @@ def _build(provider, profile, path, kind, threshold, coverage_min, walk_speed_mp
         kind=kind,
         path=path,
         distance_m=round(distance, 1),
-        duration_min=max(1, _math.ceil(distance / walk_speed_mps / 60)),
+        duration_min=max(1, math.ceil(distance / walk_speed_mps / 60)),
         score=score_path(provider, profile, path, threshold, coverage_min),
     )
 
