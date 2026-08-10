@@ -1126,9 +1126,13 @@ def score_path(
         length = dict(provider.neighbours(from_id))[to_id]
         total_length += length
 
-        count = edge_count(profile, node_a, node_b)
-        if count is None:
+        # An edge counts as covered only when BOTH endpoints report. One known
+        # endpoint is partial information, and labelling a route Low or High on
+        # that basis overstates confidence — test_coverage_is_length_weighted
+        # pins this rule.
+        if not (profile.has_data(node_a.sensor_id) and profile.has_data(node_b.sensor_id)):
             continue
+        count = edge_count(profile, node_a, node_b)
         covered_length += length
         weighted_sum += count * length
         peak = max(peak, count)
