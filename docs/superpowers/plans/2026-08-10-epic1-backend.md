@@ -427,7 +427,10 @@ def test_haversine_matches_known_distance():
 
 def test_every_node_has_coordinates():
     with get_cursor() as cur:
-        cur.execute("select count(*) as n from graph_node where latitude is null or longitude is null")
+        cur.execute(
+            "select count(*) as n from graph_node "
+            "where latitude is null or longitude is null"
+        )
         assert cur.fetchone()["n"] == 0
 
 
@@ -456,7 +459,10 @@ def test_every_edge_endpoint_resolves_to_a_node():
 
 def test_edges_have_positive_length():
     with get_cursor() as cur:
-        cur.execute("select count(*) as n from graph_edge where length_meters is null or length_meters <= 0")
+        cur.execute(
+            "select count(*) as n from graph_edge "
+            "where length_meters is null or length_meters <= 0"
+        )
         assert cur.fetchone()["n"] == 0
 
 
@@ -502,7 +508,8 @@ import math
 import os
 import sys
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "backend"))
+_HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(os.path.dirname(_HERE), "backend"))
 
 import psycopg2  # noqa: E402
 
@@ -840,7 +847,12 @@ def load_graph() -> SensorGraphProvider:
     with get_cursor() as cur:
         cur.execute("SELECT node_id, latitude, longitude, sensor_id FROM graph_node")
         nodes = [
-            Node(node_id=r["node_id"], lat=r["latitude"], lon=r["longitude"], sensor_id=r["sensor_id"])
+            Node(
+                node_id=r["node_id"],
+                lat=r["latitude"],
+                lon=r["longitude"],
+                sensor_id=r["sensor_id"],
+            )
             for r in cur.fetchall()
         ]
         cur.execute("SELECT from_node_id, to_node_id, length_meters FROM graph_edge")
@@ -938,7 +950,8 @@ def load_profile(dow: int, hour: int) -> CountProfile:
     """Load every sensor's average count for the given weekday and hour."""
     with get_cursor() as cur:
         cur.execute(
-            "SELECT location_id, avg_count FROM sensor_hourly_profile WHERE dow = %s AND hourday = %s",
+            "SELECT location_id, avg_count FROM sensor_hourly_profile "
+            "WHERE dow = %s AND hourday = %s",
             (dow, hour),
         )
         return CountProfile({r["location_id"]: r["avg_count"] for r in cur.fetchall()})
@@ -1099,7 +1112,9 @@ class RouteScore:
     coverage: float
 
 
-def score_path(provider, profile, path: list[int], threshold: int, coverage_min: float) -> RouteScore:
+def score_path(
+    provider, profile, path: list[int], threshold: int, coverage_min: float
+) -> RouteScore:
     """Score a node path: peak and mean counts, coverage, and Low/High/unavailable."""
     total_length = 0.0
     covered_length = 0.0
@@ -1736,7 +1751,8 @@ def places(q: str = Query(default="", description="Case-insensitive name filter"
             )
         else:
             cur.execute(
-                "SELECT landmark_id, name, kind, latitude, longitude FROM cbd_landmark ORDER BY name"
+                "SELECT landmark_id, name, kind, latitude, longitude "
+                "FROM cbd_landmark ORDER BY name"
             )
         rows = cur.fetchall()
 
@@ -1890,7 +1906,8 @@ router = APIRouter()
 def _landmark(landmark_id: int):
     with get_cursor() as cur:
         cur.execute(
-            "SELECT landmark_id, name, latitude, longitude FROM cbd_landmark WHERE landmark_id = %s",
+            "SELECT landmark_id, name, latitude, longitude "
+            "FROM cbd_landmark WHERE landmark_id = %s",
             (landmark_id,),
         )
         row = cur.fetchone()
