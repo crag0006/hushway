@@ -1462,20 +1462,25 @@ def test_uncovered_route_raises_unavailable_warning():
 
 def test_route_changes_with_threshold():
     # A high tolerance accepts the short busy path; a low one detours.
-    profile = CountProfile({1: 50, 2: 700, 3: 50, 4: 50})
+    # Counts of 0 are real measurements ("nobody there"), not missing data,
+    # so coverage stays complete.
+    profile = CountProfile({1: 0, 2: 200, 3: 0, 4: 0})
     tolerant = plan_routes(GRAPH, profile, 1, 4, 1000, 0.5, 1.35)
     strict = plan_routes(GRAPH, profile, 1, 4, 250, 0.5, 1.35)
     tolerant_quiet = next(r for r in tolerant.routes if r.kind == "quiet")
     strict_quiet = next(r for r in strict.routes if r.kind == "quiet")
-    assert tolerant_quiet.path != strict_quiet.path
+    assert tolerant_quiet.path == [1, 2, 4]
+    assert strict_quiet.path == [1, 3, 4]
 
 
 def test_duration_uses_walking_speed():
+    # Uniform counts mean the quiet and direct paths coincide, so dedup
+    # returns a single route. 200 m at 1.35 m/s is 148 s -> 3 minutes.
     profile = CountProfile({1: 50, 2: 50, 3: 50, 4: 50})
     result = plan_routes(GRAPH, profile, 1, 4, 500, 0.5, 1.35)
-    direct = next(r for r in result.routes if r.kind == "direct")
-    # 200 m at 1.35 m/s is 148 s, which rounds up to 3 minutes.
-    assert direct.duration_min == 3
+    assert len(result.routes) == 1
+    assert result.routes[0].path == [1, 2, 4]
+    assert result.routes[0].duration_min == 3
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
