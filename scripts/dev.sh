@@ -74,7 +74,7 @@ fi
 
 if ! "$PYTHON" -c "import fastapi, psycopg2, networkx" 2>/dev/null; then
   echo "ERROR: backend dependencies are missing for '$PYTHON'."
-  echo "       cd backend && pip install -r requirements.txt"
+  echo "       pip install -r requirements.txt   (from the repository root)"
   echo "       (or set HUSHWAY_PYTHON to the interpreter that has them)"
   exit 1
 fi

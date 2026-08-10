@@ -56,9 +56,12 @@ rows. It is safe to re-run.
 ### 2. Install dependencies
 
 ```bash
-cd backend  && pip install -r requirements.txt && cd ..
-cd frontend && npm install && cd ..
+pip install -r requirements.txt     # Python: API, scripts and tests
+cd frontend && npm install && cd .. # Frontend
 ```
+
+There is one `requirements.txt`, at the repository root, covering the API and the data
+scripts together.
 
 ### 3. Run the app
 
