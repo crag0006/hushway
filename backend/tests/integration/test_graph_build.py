@@ -22,7 +22,10 @@ def test_haversine_matches_known_distance():
 
 def test_every_node_has_coordinates():
     with get_cursor() as cur:
-        cur.execute("select count(*) as n from graph_node where latitude is null or longitude is null")
+        cur.execute(
+            "select count(*) as n from graph_node "
+            "where latitude is null or longitude is null"
+        )
         assert cur.fetchone()["n"] == 0
 
 
@@ -51,7 +54,10 @@ def test_every_edge_endpoint_resolves_to_a_node():
 
 def test_edges_have_positive_length():
     with get_cursor() as cur:
-        cur.execute("select count(*) as n from graph_edge where length_meters is null or length_meters <= 0")
+        cur.execute(
+            "select count(*) as n from graph_edge "
+            "where length_meters is null or length_meters <= 0"
+        )
         assert cur.fetchone()["n"] == 0
 
 
