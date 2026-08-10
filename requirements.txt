@@ -1,0 +1,21 @@
+# HushWay Python dependencies — the whole project, backend and scripts.
+#
+#   pip install -r requirements.txt
+#
+# The frontend's dependencies are separate, in frontend/package.json (npm install).
+
+# --- API ---------------------------------------------------------------------
+fastapi==0.115.5           # web framework; also generates /docs and /openapi.json
+uvicorn[standard]==0.32.1  # ASGI server that runs the API
+pydantic==2.10.3           # request/response models and validation
+
+# --- Database ----------------------------------------------------------------
+psycopg2-binary==2.9.10    # PostgreSQL driver (binary wheel: no build toolchain needed)
+
+# --- Data and graph ----------------------------------------------------------
+pandas==2.2.2              # scripts/data_loader.py reads the cleaned CSVs
+networkx==3.3              # scripts/build_graph.py checks graph connectivity
+
+# --- Tests -------------------------------------------------------------------
+pytest==8.3.4              # test runner
+httpx==0.28.1              # required by fastapi.testclient.TestClient

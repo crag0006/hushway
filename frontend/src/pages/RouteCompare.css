@@ -48,3 +48,23 @@
   background: rgba(20, 30, 25, .2);
   border-radius: 3px;
 }
+
+.rc-page__status {
+  padding: 12px 16px;
+  color: var(--text-muted, #6b6b6b);
+  font-size: 14px;
+}
+
+.rc-page__status--error {
+  color: #c22a2a;
+  background: rgba(194, 42, 42, 0.08);
+  border-radius: 8px;
+  line-height: 1.5;
+}
+
+.rc-page__status--error code {
+  font-size: 12px;
+  background: rgba(0, 0, 0, 0.06);
+  padding: 1px 4px;
+  border-radius: 3px;
+}

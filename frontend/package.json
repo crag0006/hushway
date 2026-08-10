@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "dev:all": "bash ../scripts/dev.sh"
   },
   "dependencies": {
     "leaflet": "^1.9.4",

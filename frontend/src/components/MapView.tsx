@@ -1,59 +1,38 @@
-import { MapContainer, TileLayer, Marker, Polyline, Popup } from 'react-leaflet'
-import L from 'leaflet'
-import { MELBOURNE_CBD, routes, places, type LatLng } from '../mockData'
+import { MapContainer, TileLayer, Polyline, Popup } from 'react-leaflet'
+import type { ApiRoute, LatLng } from '../api/types'
 import './MapView.css'
 
-// Fix default marker icon paths (Leaflet with bundlers)
-const yellowPin = L.divIcon({
-  className: 'hw-map__pin',
-  html: `<div class="hw-map__pin-inner"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg></div>`,
-  iconSize: [46, 46],
-  iconAnchor: [23, 42],
-})
+const MELBOURNE_CBD: LatLng = [-37.8136, 144.9631]
 
-const placeIcon = L.divIcon({
-  className: 'hw-map__place',
-  html: `<div class="hw-map__place-inner"></div>`,
-  iconSize: [34, 34],
-  iconAnchor: [17, 17],
-})
+const COLORS: Record<ApiRoute['type'], string> = {
+  quiet: '#5EE39C',
+  direct: '#C22A2A',
+}
 
-export default function MapView({ center = MELBOURNE_CBD }: { center?: LatLng }) {
+export default function MapView({
+  routes = [],
+  center = MELBOURNE_CBD,
+}: {
+  routes?: ApiRoute[]
+  center?: LatLng
+}) {
   return (
     <div className="hw-map">
-      <MapContainer
-        center={center}
-        zoom={13}
-        scrollWheelZoom
-        className="hw-map__container"
-      >
+      <MapContainer center={center} zoom={14} scrollWheelZoom className="hw-map__container">
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-
-        {routes.map((r) => (
+        {routes.map((route) => (
           <Polyline
-            key={r.id}
-            positions={r.path}
-            pathOptions={{
-              color: r.color,
-              weight: 8,
-              opacity: 0.9,
-              lineCap: 'round',
-              lineJoin: 'round',
-            }}
-          />
-        ))}
-
-        <Marker position={center} icon={yellowPin}>
-          <Popup>You are here</Popup>
-        </Marker>
-
-        {places.map((p) => (
-          <Marker key={p.id} position={p.position} icon={placeIcon}>
-            <Popup>{p.name}</Popup>
-          </Marker>
+            key={route.id}
+            positions={route.path}
+            pathOptions={{ color: COLORS[route.type], weight: 5, opacity: 0.85 }}
+          >
+            <Popup>
+              {route.type === 'quiet' ? 'Quiet Route' : 'Fastest Route'} · {route.duration_min} min
+            </Popup>
+          </Polyline>
         ))}
       </MapContainer>
     </div>

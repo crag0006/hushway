@@ -2,8 +2,6 @@ import { useState } from 'react'
 import {
   ArrowLeft,
   Bookmark,
-  X,
-  Mic,
   Car,
   Bus,
   Footprints,
@@ -12,10 +10,11 @@ import {
   Users,
   type LucideIcon,
 } from 'lucide-react'
+import type { Place } from '../api/types'
+import type { Density } from '../hooks/useSensitivity'
 import './SearchPanel.css'
 
 type TravelMode = 'drive' | 'transit' | 'walk' | 'accessible'
-type Density = 'low' | 'mid' | 'high'
 
 const modes: { id: TravelMode; label: string; Icon: LucideIcon }[] = [
   { id: 'drive', label: 'Drive', Icon: Car },
@@ -30,11 +29,26 @@ const densities: { id: Density; label: string; Icon: LucideIcon }[] = [
   { id: 'high', label: 'High', Icon: Users },
 ]
 
-export default function SearchPanel() {
-  const [origin, setOrigin] = useState('')
-  const [destination, setDestination] = useState('CBD')
-  const [mode, setMode] = useState<TravelMode>('transit')
-  const [density, setDensity] = useState<Density>('low')
+interface SearchPanelProps {
+  places: Place[]
+  originId: number | null
+  destinationId: number | null
+  density: Density
+  onOriginChange: (id: number | null) => void
+  onDestinationChange: (id: number | null) => void
+  onDensityChange: (density: Density) => void
+}
+
+export default function SearchPanel({
+  places,
+  originId,
+  destinationId,
+  density,
+  onOriginChange,
+  onDestinationChange,
+  onDensityChange,
+}: SearchPanelProps) {
+  const [mode, setMode] = useState<TravelMode>('walk')
 
   return (
     <section className="sp" aria-label="Search and preferences">
@@ -55,26 +69,32 @@ export default function SearchPanel() {
         </div>
         <div className="sp__inputs">
           <div className="sp__input">
-            <input
-              value={origin}
-              onChange={(e) => setOrigin(e.target.value)}
-              placeholder="Search"
+            <select
               aria-label="Origin"
-            />
-            <button className="sp__input-btn" aria-label="Clear origin" onClick={() => setOrigin('')}>
-              <X size={16} />
-            </button>
+              value={originId ?? ''}
+              onChange={(e) => onOriginChange(e.target.value ? Number(e.target.value) : null)}
+            >
+              <option value="">Choose a starting point</option>
+              {places.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
           </div>
           <div className="sp__input">
-            <input
-              value={destination}
-              onChange={(e) => setDestination(e.target.value)}
-              placeholder="Destination"
+            <select
               aria-label="Destination"
-            />
-            <button className="sp__input-btn" aria-label="Voice">
-              <Mic size={16} />
-            </button>
+              value={destinationId ?? ''}
+              onChange={(e) => onDestinationChange(e.target.value ? Number(e.target.value) : null)}
+            >
+              <option value="">Choose a destination</option>
+              {places.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       </div>
@@ -106,7 +126,7 @@ export default function SearchPanel() {
               role="tab"
               aria-selected={density === id}
               className={`sp__density${density === id ? ' sp__density--active' : ''}`}
-              onClick={() => setDensity(id)}
+              onClick={() => onDensityChange(id)}
             >
               <Icon size={16} />
               <span>{label}</span>
