@@ -1,0 +1,308 @@
+.register-page {
+  min-height: 100vh;
+  background: #f6f8f5;
+}
+
+
+/* Main register area */
+.register-main {
+  min-height: 720px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 70px 24px;
+
+  background:
+    radial-gradient(
+      circle at 20% 20%,
+      rgba(192, 211, 198, 0.32),
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at 80% 80%,
+      rgba(208, 220, 210, 0.35),
+      transparent 40%
+    ),
+    #f7f9f6;
+}
+
+
+/* Register card */
+.register-card {
+  width: 100%;
+  max-width: 480px;
+
+  background: rgba(255, 255, 255, 0.96);
+
+  padding: 48px 42px;
+
+  border-radius: 18px;
+
+  border: 1px solid rgba(69, 91, 81, 0.12);
+
+  box-shadow:
+    0 20px 50px rgba(38, 58, 49, 0.10);
+
+  animation: registerFade 0.6s ease;
+}
+
+
+/* Heading */
+.register-heading {
+  text-align: center;
+  margin-bottom: 34px;
+}
+
+.register-heading h1 {
+  margin: 0 0 10px;
+
+  font-size: 34px;
+  font-weight: 600;
+
+  color: #23352e;
+
+  letter-spacing: -0.5px;
+}
+
+.register-heading p {
+  margin: 0;
+
+  font-size: 15px;
+  line-height: 1.6;
+
+  color: #77827d;
+}
+
+
+/* Form */
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+
+/* Input field */
+.register-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.register-field label {
+  font-size: 14px;
+  font-weight: 600;
+
+  color: #344a40;
+}
+
+.register-field input {
+  width: 100%;
+
+  padding: 14px 16px;
+
+  font-size: 15px;
+
+  color: #24332d;
+
+  background: #ffffff;
+
+  border: 1px solid #d8dfdb;
+
+  border-radius: 8px;
+
+  outline: none;
+
+  box-sizing: border-box;
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.register-field input::placeholder {
+  color: #a6afaa;
+}
+
+
+/* Input focus */
+.register-field input:focus {
+  border-color: #657f72;
+
+  box-shadow:
+    0 0 0 3px rgba(101, 127, 114, 0.12);
+}
+
+
+/* Terms */
+.register-terms {
+  margin-top: 2px;
+}
+
+.register-terms label {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 9px;
+
+  font-size: 13px;
+  line-height: 1.5;
+
+  color: #68756f;
+
+  cursor: pointer;
+}
+
+.register-terms input {
+  width: 16px;
+  height: 16px;
+
+  margin-top: 2px;
+
+  accent-color: #526d60;
+}
+
+
+/* Create account button */
+.register-button {
+  width: 100%;
+
+  padding: 15px;
+
+  margin-top: 4px;
+
+  border: none;
+
+  border-radius: 8px;
+
+  background: #425f52;
+
+  color: white;
+
+  font-size: 16px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.register-button:hover {
+  background: #314b3f;
+
+  transform: translateY(-1px);
+
+  box-shadow:
+    0 8px 18px rgba(49, 75, 63, 0.18);
+}
+
+
+/* Divider */
+.register-divider {
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+
+  margin: 30px 0 24px;
+
+  color: #9ba49f;
+
+  font-size: 13px;
+}
+
+.register-divider::before,
+.register-divider::after {
+  content: '';
+
+  flex: 1;
+
+  height: 1px;
+
+  background: #e1e5e2;
+}
+
+
+/* Sign in link */
+.register-signin {
+  text-align: center;
+}
+
+.register-signin p {
+  margin: 0;
+
+  color: #78837d;
+
+  font-size: 14px;
+}
+
+.register-signin a {
+  margin-left: 6px;
+
+  color: #425f52;
+
+  font-weight: 700;
+
+  text-decoration: none;
+}
+
+.register-signin a:hover {
+  text-decoration: underline;
+}
+
+
+/* Animation */
+@keyframes registerFade {
+
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* Mobile */
+@media (max-width: 600px) {
+
+  .register-main {
+    padding: 45px 18px;
+  }
+
+  .register-card {
+    padding: 36px 24px;
+
+    border-radius: 14px;
+  }
+
+  .register-heading h1 {
+    font-size: 29px;
+  }
+
+  .register-error {
+  margin-bottom: 24px;
+  padding: 14px 16px;
+
+  background: #fdecec;
+  border: 1px solid #ef9a9a;
+  border-left: 5px solid #c62828;
+
+  border-radius: 8px;
+
+  color: #b71c1c;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  text-align: center;
+}
+}

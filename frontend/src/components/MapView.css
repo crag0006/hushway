@@ -1,0 +1,55 @@
+.hw-map {
+  position: absolute;
+  inset: 0;
+}
+
+.hw-map__container {
+  height: 100%;
+  width: 100%;
+  border-radius: var(--radius-lg);
+}
+
+/* Yellow pin marker */
+.hw-map__pin-inner {
+  width: 42px;
+  height: 42px;
+  background: var(--yellow);
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .25), 0 0 0 4px rgba(245, 211, 63, .3);
+  border: 2px solid #fff;
+}
+
+.hw-map__pin-inner > svg {
+  transform: rotate(45deg);
+}
+
+/* Circular green place markers */
+.hw-map__place-inner {
+  width: 14px;
+  height: 14px;
+  background: #58C377;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .25);
+}
+
+/* Leaflet tweaks for a softer feel */
+.leaflet-container {
+  font-family: var(--font-sans);
+}
+
+.leaflet-control-attribution {
+  background: rgba(255, 255, 255, .8) !important;
+  font-size: 10.5px !important;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  font-family: var(--font-sans);
+  font-weight: 600;
+}
