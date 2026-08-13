@@ -219,6 +219,42 @@ Those links come back when the pages do.
 
 ## 6. Font/colour not visible
 
+### The route card renders with no styling at all
+
+Found while planning, and it is almost certainly what the comment is about.
+
+`RouteCard.tsx` renders `route-card`, `route-card__head`, `route-card__title`,
+`route-card__flag`, `route-card__meta` and `route-card__detail`. `RouteCard.css` defines
+`.rc`, `.rc--quiet`, `.rc--fast`, `.rc__tag`, `.rc__header`, `.rc__title`, `.rc__meta`,
+`.rc__duration`, `.rc__submeta`, `.rc__desc` and `.rc__btn`.
+
+**The two sets do not intersect.** A sweep of all 226 rendered class names against all 247
+CSS selectors in the frontend returns exactly one component whose classes are entirely
+undefined, and it is this one. The route cards — the primary output of the entire product —
+render as unstyled default text on the page background: no card, no padding, no green/red
+colour coding, no visual separation between the quiet route and the fast one.
+
+This also means the whole route-card colour system is dead code:
+
+| Token | Reachable? |
+| --- | --- |
+| `--quiet-bg`, `--fast-bg`, `--fast-ink`, `--fast-btn` | No — only referenced under dead `.rc*` selectors |
+| `--fast-tint` | No — zero references anywhere |
+| `--quiet-ink`, `--quiet-btn` | Partly — also used by `SanctuaryCard.css`, which works |
+
+The fix is to rewrite `RouteCard.css` against the class names the component actually
+renders, restoring the quiet/fast colour coding from the existing tokens. We do **not**
+resurrect the `.rc__btn`, `.rc__desc` and `.rc__tag` rules — those style elements the
+current component does not render, and reinstating them would mean inventing UI the spec
+does not call for. Rules for elements that no longer exist are deleted with the rename.
+
+The contrast of the restored card colours must be verified as part of §6's audit, since
+these pairings have never actually been on screen. `--quiet-ink #294F35` on `--quiet-bg
+#DDEDDF` and `--fast-ink #831C2E` on `--fast-bg #FBDFE3` are both measured in the
+implementation plan's first task and adjusted if they fall short.
+
+### Measured contrast
+
 Measured with the WCAG 2.1 relative-luminance formula. Current state:
 
 | Element | Ratio | Needs | Result |
