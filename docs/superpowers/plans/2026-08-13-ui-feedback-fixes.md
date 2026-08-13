@@ -511,6 +511,24 @@ The old `.rc__btn`, `.rc__desc`, `.rc__tag`, `.rc__duration` and `.rc__submeta` 
   color: var(--fast-ink);
 }
 
+/* The recommended route already carries a "Recommended" chip; this lifts the
+   card so the pairing reads at a glance. Deliberately NOT border-color —
+   Task 11 uses the border to show which route is selected on the map, and
+   the two states must be able to appear together. */
+.route-card--recommended {
+  box-shadow: var(--shadow-sm);
+}
+
+/* The sensory badge is a pill and must hug its text. As a flex item in the
+   card's column it would otherwise stretch to the full card width. Task 8
+   wraps the badge in .sensory-badge-group, so both are covered here.
+   Do NOT solve this with align-items on .route-card — that would shrink
+   .route-card__head, which needs full width to push the chip right. */
+.route-card > .sensory-badge,
+.route-card > .sensory-badge-group {
+  align-self: flex-start;
+}
+
 .route-card__head {
   display: flex;
   justify-content: space-between;
@@ -1641,8 +1659,6 @@ import './Footer.css'
 const links = [
   { to: '/explore', label: 'Explore' },
   { to: '/quietplace', label: 'QuietPlace' },
-  { to: '/resources', label: 'Resources' },
-  { to: '/contact', label: 'Contact' },
 ]
 
 export default function Footer() {
@@ -2244,7 +2260,7 @@ export function HowItWorks() {
 const ENTRIES = [
   { to: '/explore', title: 'Plan a calm route', body: 'Compare a quieter walk against the quickest one.' },
   { to: '/quietplace', title: 'Find a quiet place', body: 'Sanctuaries and low-stimulation spots around the CBD.' },
-  { to: '/resources', title: 'What the badges mean', body: 'How crowd data becomes a Low or High Sensory label.' },
+  { to: '/explore', title: 'What the badges mean', body: 'How crowd data becomes a Low or High Sensory label.' },
 ]
 
 export function EntryCards() {
@@ -2518,7 +2534,8 @@ cd frontend && npm test           # unit tests: contrast, palette, InfoTip, Rout
 
 - [ ] **Step 5: Append the audit table to the spec**
 
-Walk `/`, `/explore`, `/quietplace`, `/community`, `/resources` and `/contact`. For every text and non-text UI element, record the measured ratio in a new "Audit results" section at the end of `docs/2026-08-13-ui-feedback-design.md`, including the sampled hero-scrim value from Task 5 Step 3. Any element under its floor gets fixed and re-measured before this task is done.
+Walk `/`, `/explore` and `/quietplace` — the only routes left after the Community,
+Resources and Contact pages were removed on 2026-08-13. For every text and non-text UI element, record the measured ratio in a new "Audit results" section at the end of `docs/2026-08-13-ui-feedback-design.md`, including the sampled hero-scrim value from Task 5 Step 3. Any element under its floor gets fixed and re-measured before this task is done.
 
 - [ ] **Step 6: Full verification**
 

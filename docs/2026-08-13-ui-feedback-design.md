@@ -318,7 +318,10 @@ rediscovered.
 ## Out of scope
 
 - Any backend, database, API or routing-graph change.
-- Rebuilding `/community`, `/resources` and `/contact`, which still render from
+- ~~Rebuilding `/community`, `/resources` and `/contact`.~~ **Superseded 2026-08-13:** the
+  reviewer asked for these three pages to be removed outright. Their `.tsx` and `.css`
+  files, routes and nav links are deleted; the app is now `/`, `/explore` and
+  `/quietplace` only. The original note read: they still render from
   `src/mockData.ts`. We fix their contrast and their header and footer; their content is
   EPIC-2 work.
 - Restoring travel modes, bookmarks or authentication. Each returns when it has something

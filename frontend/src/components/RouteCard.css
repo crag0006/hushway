@@ -1,101 +1,78 @@
-.rc {
+/* Class names here must match RouteCard.tsx exactly. They did not until
+   2026-08-13, which left the card rendering entirely unstyled. */
+
+.route-card {
   position: relative;
-  padding: 22px 20px 20px;
+  padding: 20px;
   border-radius: var(--radius-lg);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
+  border: 2px solid transparent;
+  transition: border-color var(--dur-1) var(--ease), box-shadow var(--dur-1) var(--ease);
 }
 
-.rc--quiet {
+.route-card--quiet {
   background: var(--quiet-bg);
   color: var(--quiet-ink);
 }
 
-.rc--fast {
+.route-card--fast {
   background: var(--fast-bg);
   color: var(--fast-ink);
 }
 
-.rc__tag {
-  position: absolute;
-  top: 14px;
-  left: 16px;
+/* The recommended route already carries a "Recommended" chip; this lifts the
+   card so the pairing reads at a glance. Deliberately NOT border-color — a
+   later task uses the border to show which route is selected on the map, and
+   the two states must be able to appear together. */
+.route-card--recommended {
+  box-shadow: var(--shadow-sm);
+}
+
+/* The sensory badge is a pill and must hug its text. As a flex item in the
+   card's column it would otherwise stretch to the full card width. A later
+   task wraps the badge in .sensory-badge-group, so both are covered here. */
+.route-card > .sensory-badge,
+.route-card > .sensory-badge-group {
+  align-self: flex-start;
+}
+
+.route-card__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.route-card__title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  color: inherit;
+}
+
+.route-card__flag {
+  flex-shrink: 0;
   padding: 4px 10px;
   border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, .75);
+  background: rgba(255, 255, 255, 0.75);
   color: var(--quiet-btn);
   font-size: 10.5px;
   letter-spacing: 0.08em;
   font-weight: 700;
+  text-transform: uppercase;
 }
 
-.rc__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 12px;
-  margin-top: 12px;
-}
-
-.rc--quiet .rc__header { margin-top: 16px; }
-
-.rc__title {
+.route-card__meta {
   margin: 0;
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-  color: inherit;
-}
-
-.rc__meta {
-  text-align: right;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
-}
-
-.rc__duration {
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-}
-
-.rc__submeta {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  opacity: .75;
-}
-
-.rc__desc {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.45;
-  opacity: .85;
-}
-
-.rc__btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px 18px;
-  border-radius: var(--radius-pill);
+  font-size: 15px;
   font-weight: 600;
-  font-size: 14.5px;
-  color: #fff;
-  transition: background var(--dur-1) var(--ease), transform var(--dur-1) var(--ease);
-  margin-top: 4px;
 }
 
-.rc__btn:hover { transform: translateY(-1px); }
-.rc__btn:active { transform: translateY(0); }
-
-.rc--quiet .rc__btn { background: var(--quiet-btn); }
-.rc--quiet .rc__btn:hover { background: var(--quiet-btn-h); }
-
-.rc--fast .rc__btn { background: var(--fast-btn); }
-.rc--fast .rc__btn:hover { background: var(--fast-btn-h); }
+.route-card__detail {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+}

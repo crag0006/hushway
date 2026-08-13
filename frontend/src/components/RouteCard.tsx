@@ -17,7 +17,15 @@ export default function RouteCard({
   const km = (route.distance_m / 1000).toFixed(1)
 
   return (
-    <article className={`route-card${recommended ? ' route-card--recommended' : ''}`}>
+    <article
+      className={[
+        'route-card',
+        `route-card--${route.type === 'quiet' ? 'quiet' : 'fast'}`,
+        recommended ? 'route-card--recommended' : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+    >
       <header className="route-card__head">
         <h3 className="route-card__title">{TITLES[route.type]}</h3>
         {recommended && <span className="route-card__flag">Recommended</span>}
