@@ -17,8 +17,12 @@ export default function WarningBanner({ title, message, onAllow, onIgnore }: Pro
         <span className="wb__msg">{message}</span>
       </div>
       <div className="wb__actions">
-        <button className="wb__btn wb__btn--allow" onClick={onAllow}>Allow</button>
-        <button className="wb__btn wb__btn--ignore" onClick={onIgnore}>Ignore</button>
+        <button type="button" className="wb__btn wb__btn--allow" onClick={onAllow}>
+          Allow
+        </button>
+        <button type="button" className="wb__btn wb__btn--ignore" onClick={onIgnore}>
+          Ignore
+        </button>
       </div>
     </div>
   )

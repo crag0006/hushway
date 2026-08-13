@@ -20,6 +20,21 @@ export default function RouteCompare() {
   const { density, setDensity, threshold } = useSensitivity()
   const { data, loading, error } = useRoute(originId, destinationId, threshold)
 
+  // Warnings the user has acknowledged. Keyed by warning code, which the API
+  // guarantees is unique per response.
+  const [dismissedWarnings, setDismissedWarnings] = useState<string[]>([])
+
+  const dismissWarning = (code: string) =>
+    setDismissedWarnings((current) =>
+      current.includes(code) ? current : [...current, code],
+    )
+
+  // A new plan is a new set of warnings, so an acknowledgement of the old ones
+  // must not silence them.
+  useEffect(() => {
+    setDismissedWarnings([])
+  }, [originId, destinationId, threshold])
+
   useEffect(() => {
     fetchPlaces()
       .then((result) => {
@@ -35,7 +50,9 @@ export default function RouteCompare() {
   }, [])
 
   const routes = data?.routes ?? []
-  const warnings = data?.warnings ?? []
+  const warnings = (data?.warnings ?? []).filter(
+    (w) => !dismissedWarnings.includes(w.code),
+  )
 
   return (
     <div className="app-shell">
@@ -78,7 +95,13 @@ export default function RouteCompare() {
           <div className="rc-page__overlay-top">
             <div className="rc-page__warning-wrap">
               {warnings.map((w) => (
-                <WarningBanner key={w.code} title="Warning" message={w.message} />
+                <WarningBanner
+                  key={w.code}
+                  title="Warning"
+                  message={w.message}
+                  onAllow={() => dismissWarning(w.code)}
+                  onIgnore={() => dismissWarning(w.code)}
+                />
               ))}
             </div>
             <div className="rc-page__weather">
